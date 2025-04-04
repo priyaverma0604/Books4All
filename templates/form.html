@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Books4All Certificate Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 50px;
+    }
+    form {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+      margin: 10px 0;
+      padding: 10px;
+      width: 300px;
+    }
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h2>Books4All - Certificate Generator</h2>
+  <form method="POST">
+    <input type="text" name="name" placeholder="Organization/Donor Name" required><br>
+    <input type="email" name="email" placeholder="Recipient Email" required><br>
+    <button type="submit">Generate & Send Certificate</button>
+  </form>
+</body>
+</html>

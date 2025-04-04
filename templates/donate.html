@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Donate Books - Books4All</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <style>
+    .container { max-width: 800px; margin: 40px auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    h2 { text-align: center; margin-bottom: 20px; }
+    label { font-weight: bold; display: block; margin: 15px 0 5px; }
+    input, select, textarea { width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
+    button { margin-top: 20px; background: #8a56e8; color: #fff; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #7645d9; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📚 Donate a Book</h2>
+    <form action="/donate" method="POST" enctype="multipart/form-data">
+      <!-- Book Cover Upload -->
+      <label for="image">Upload Book Cover (for OCR)</label>
+      <input type="file" name="image" accept="image/*">
+
+      {% if data %}
+      <!-- OCR Autofilled Fields -->
+      <label for="title">Title</label>
+      <input type="text" name="title" value="{{ data.title }}">
+
+      <label for="author">Author</label>
+      <input type="text" name="author" value="{{ data.author }}">
+
+      <label for="genre">Genre</label>
+      <input type="text" name="genre" value="{{ data.genre }}">
+
+      <label for="condition">Condition</label>
+      <select name="condition" required>
+        <option>New</option>
+        <option>Good</option>
+        <option>Fair</option>
+        <option>Used</option>
+      </select>
+
+      <label for="category">Category</label>
+      <input type="text" name="category" placeholder="e.g. Mathematics, Grade 6">
+
+      <label for="publisher">Publisher</label>
+      <input type="text" name="publisher" placeholder="e.g. Scholastic">
+
+      <label for="location">Location</label>
+      <input type="text" name="location" placeholder="e.g. Mumbai">
+
+      <label for="quantity">Quantity</label>
+      <input type="number" name="quantity" min="1" required>
+
+      <!-- Optional Verification Image -->
+      <label for="verify_photo">Upload Additional Photo (Optional)</label>
+      <input type="file" name="verify_photo" accept="image/*">
+      {% endif %}
+
+      <button type="submit">📤 Submit Donation</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('donationForm');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch("/donate", {
+          method: "POST",
+          body: formData
+        });
+
+        if (response.ok) {
+          alert("✅ Donation submitted successfully!");
+          window.location.href = "/home";
+        } else {
+          alert("❌ Submission failed. Please try again.");
+        }
+      } catch (error) {
+        alert("❌ An error occurred: " + error.message);
+      }
+    });
+  </script>
+    </form>
+  </div>
+</body>
+</html>

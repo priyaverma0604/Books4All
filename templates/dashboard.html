@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Books4All</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        .dashboard-container {
+            padding: 30px;
+            max-width: 1100px;
+            margin: auto;
+        }
+        .welcome {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .stats-grid {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background-color: white;
+            flex: 1;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .stat-card h2 {
+            font-size: 2.5rem;
+            color: #8a56e8;
+        }
+        .stat-card p {
+            margin-top: 5px;
+            color: #666;
+        }
+        .quick-links {
+            margin-top: 30px;
+        }
+        .quick-links h3 {
+            margin-bottom: 10px;
+            color: #444;
+        }
+        .quick-links a {
+            display: inline-block;
+            margin-right: 15px;
+            background-color: #8a56e8;
+            color: white;
+            padding: 10px 18px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .quick-links a:hover {
+            background-color: #7645d9;
+        }
+        .timeline-graphic {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 5px solid #8a56e8;
+    margin-top: 10px;
+}
+
+        .timeline-graphic h4 {
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #444;
+        }
+
+        .progress-timeline {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+            border-left: 2px solid #ccc;
+            position: relative;
+        }
+
+        .progress-timeline li {
+            padding: 10px 20px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-timeline li::before {
+            content: "";
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ccc;
+            border: 2px solid #fff;
+            position: absolute;
+            left: -7px;
+            top: 18px;
+            z-index: 1;
+        }
+
+        .progress-timeline li.completed::before {
+            background: #8a56e8;
+        }
+
+        .progress-timeline .icon {
+            font-size: 18px;
+        }
+
+        .progress-timeline .details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .progress-timeline .details strong {
+            font-size: 15px;
+            color: #333;
+        }
+
+        .progress-timeline .details small {
+            font-size: 13px;
+            color: #666;
+        }
+                .order-container {
+            margin-top: 40px;
+        }
+        .order-container h2 {
+            margin-bottom: 15px;
+            color: #444;
+        }
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .orders-table th, .orders-table td {
+            padding: 14px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+        .orders-table th {
+            background-color: #f0ebff;
+            color: #333;
+        }
+        .orders-table tbody tr:hover {
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+        .timeline {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-left: 4px solid #8a56e8;
+            font-size: 14px;
+        }
+        .deliver-btn {
+            padding: 6px 12px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .deliver-btn:hover {
+            background-color: #218838;
+        }
+        .review-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .review-btn:hover {
+            background-color: #0056b3;
+        }
+        .status-icon {
+            color: green;
+            margin-left: 5px;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            text-align: center;
+        }
+        .modal-content input, .modal-content textarea {
+            width: 100%;
+            margin: 10px 0;
+            padding: 8px;
+        }
+        .certificate-banner {
+            background-color: #dff0d8;
+            color: #3c763d;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+        .stars {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .star {
+            font-size: 24px;
+            cursor: pointer;
+            color: #ccc;
+            transition: color 0.2s ease-in-out;
+        }
+
+        .star.selected,
+        .star:hover,
+        .star:hover ~ .star {
+            color: #ffc107;
+        }
+
+        .modal-content select {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .nav-links a {
+        margin-left: 20px;
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+      }
+      .nav-links a.sign-in-btn {
+        background-color: #8a56e8;
+        color: #fff;
+        padding: 6px 14px;
+        border-radius: 5px;
+      }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-book-open"></i> BooKs4All
+        </div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/donate">Donate Books</a>
+            <a href="/booksearch">Request Books</a>
+            <a href="/dashboard">Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="welcome">👋 Welcome, {{ user }}!</div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h2 id="donatedCount">100</h2>
+                <p>Books Donated</p>
+            </div>
+            <div class="stat-card">
+                <h2>5</h2>
+                <p>Pending Requests</p>
+            </div>
+            <div class="stat-card">
+                <h2>3</h2>
+                <p>Matches Made</p>
+            </div>
+        </div>
+
+        <div id="certificateBanner" class="certificate-banner">
+            🎉 Congratulations! You've completed 100 donations. <a href="/form">Download Your Certificate</a>
+        </div>
+
+        <div class="order-container">
+            <h2>📚 My Orders (Requested Books)</h2>
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th>Book Title</th>
+                  <th>Author</th>
+                  <th>Status</th>
+                  <th>Fulfilled</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for req in requests %}
+                <tr {% if req.status == 'Completed' %}onclick="toggleTimeline(this)"{% endif %}>
+                  <td>{{ req.title }}</td>
+                  <td>{{ req.author }}</td>
+                  <td>
+                    {% if req.status == 'Completed' %}
+                      {{ req.status }} <i class="fas fa-check-circle status-icon"></i>
+                    {% else %}
+                      {{ req.status }}
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if req.action == 'Buy' %}
+                      <a href="/checkout?title={{ req.title }}">
+                        <button class="deliver-btn">Buy</button>
+                      </a>
+                    {% elif req.action == 'Review' %}
+                      <button class="review-btn" onclick="event.stopPropagation(); openReviewModal()">Review</button>
+                    {% else %}
+                      0/1
+                    {% endif %}
+                  </td>
+                </tr>
+                {% if req.status == 'Completed' %}
+                <tr class="hidden">
+                  <td colspan="4">
+                    <div class="timeline-graphic">
+                      <h4>📦 Shipment Timeline</h4>
+                      <ul class="progress-timeline">
+                        <li class="completed">
+                          <span class="icon">📦</span>
+                          <div class="details">
+                            <strong>Dispatched</strong>
+                            <small>Mar 21, 2025</small>
+                          </div>
+                        </li>
+                        <li class="completed">
+                          <span class="icon">🚚</span>
+                          <div class="details">
+                            <strong>In Transit</strong>
+                            <small>Mar 22, 2025</small>
+                          </div>
+                        </li>
+                        <li class="completed">
+                          <span class="icon">📬</span>
+                          <div class="details">
+                            <strong>Delivered</strong>
+                            <small>Mar 24, 2025</small>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+        <div class="order-container">
+            <h2>📦 My Donations</h2>
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>Book Title</th>
+                        <th>Recipient</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>I Too Had a Love Story</td>
+                        <td>Sneha Foundation</td>
+                        <td>Listed</td>
+                        <td>—</td>
+                    </tr>
+                    <tr>
+                        <td>The Guide</td>
+                        <td>Rural Literacy Drive</td>
+                        <td>Waiting for Delivery</td>
+                        <td><button class="deliver-btn" onclick="markDelivered(this, 'The Guide')">Deliver Now</button></td>
+                    </tr>
+                    <tr>
+                        <td>Train to Pakistan</td>
+                        <td>Saraswati NGO</td>
+                        <td>Delivered</td>
+                        <td>—</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>📸 Review Book Delivery</h3>
+            <div class="stars">
+                <span class="star" data-value="1">&#9733;</span>
+                <span class="star" data-value="2">&#9733;</span>
+                <span class="star" data-value="3">&#9733;</span>
+                <span class="star" data-value="4">&#9733;</span>
+                <span class="star" data-value="5">&#9733;</span>
+            </div>
+            <select id="conditionDropdown">
+                <option value="" disabled selected>Select condition</option>
+                <option value="As listed">As listed</option>
+                <option value="Better">Better</option>
+                <option value="Worse">Worse</option>
+            </select>
+            <textarea id="reviewComment" placeholder="Leave a comment..."></textarea>
+            <input type="file" accept="image/*">
+            <button onclick="submitReview()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        let web3;
+        let userAccount;
+        let selectedRating = 0;
+
+        async function initWeb3() {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                try {
+                    await window.ethereum.request({ method: "eth_requestAccounts" });
+                    const accounts = await web3.eth.getAccounts();
+                    userAccount = accounts[0];
+                    console.log("Connected to MetaMask:", userAccount);
+                } catch (error) {
+                    alert("User denied MetaMask access");
+                }
+            } else {
+                alert("Please install MetaMask to use this feature.");
+            }
+        }
+
+        async function sendDeliveryTransaction(bookTitle) {
+            const toAddress = userAccount;
+            const txParams = {
+                from: userAccount,
+                to: toAddress,
+                value: web3.utils.toHex(web3.utils.toWei("0.0001", "ether")),
+            };
+
+            try {
+                const txHash = await web3.eth.sendTransaction(txParams);
+                alert(`✅ Delivery Transaction for '${bookTitle}' Recorded!\nTX Hash: ${txHash.transactionHash || txHash}`);
+            } catch (err) {
+                console.error("Delivery Not Approved", err);
+                alert("❌ Delivery Not approved " + err.message);
+            }
+        }
+
+        async function markDelivered(button, bookTitle = 'Book') {
+            const row = button.closest('tr');
+            row.cells[2].innerText = 'Delivered';
+            row.cells[3].innerHTML = '—';
+            await sendDeliveryTransaction(bookTitle);
+        }
+
+        function toggleTimeline(row) {
+            const nextRow = row.nextElementSibling;
+            if (nextRow && nextRow.classList.contains("hidden")) {
+                nextRow.classList.remove("hidden");
+            } else if (nextRow) {
+                nextRow.classList.add("hidden");
+            }
+        }
+
+        function openReviewModal() {
+            document.getElementById("reviewModal").style.display = "flex";
+        }
+
+        function submitReview() {
+            const condition = document.getElementById("conditionDropdown").value;
+            const comment = document.getElementById("reviewComment").value;
+
+            if (!selectedRating || !condition) {
+                alert("Please provide both rating and condition.");
+                return;
+            }
+
+            alert(`Thank you for your feedback!\nRating: ${selectedRating} Stars\nCondition: ${condition}\nComment: ${comment || 'None'}`);
+            document.getElementById("reviewModal").style.display = "none";
+
+            const reviewBtn = document.querySelector(".review-btn");
+            if (reviewBtn) reviewBtn.style.display = "none";
+        }
+
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', function () {
+                selectedRating = this.getAttribute('data-value');
+                document.querySelectorAll('.star').forEach(s => s.classList.remove('selected'));
+                for (let i = 0; i < selectedRating; i++) {
+                    document.querySelectorAll('.star')[i].classList.add('selected');
+                }
+            });
+        });
+
+        window.addEventListener("load", () => {
+            initWeb3();
+            const donatedCount = parseInt(document.getElementById("donatedCount").innerText);
+            if (donatedCount >= 100) {
+                document.getElementById("certificateBanner").style.display = "block";
+            }
+        });
+    </script>
+</body>
+</html>
