@@ -2,3 +2,4 @@ Flask
 Pillow
 sendgrid
 python-dotenv
+gunicorn
