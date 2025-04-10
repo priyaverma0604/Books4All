@@ -204,7 +204,7 @@ def donate_combined():
 
 @app.route('/dashboard')
 def dashboard():
-    return render_template('dashboard.html', user="Abhaya", requests=request_list)
+    return render_template('dashboard.html', user="Priya", requests=request_list)
 
 @app.route('/booksearch')
 def booksearch():
