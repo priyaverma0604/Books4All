@@ -3,3 +3,4 @@ Pillow
 sendgrid
 python-dotenv
 gunicorn
+easyocr
